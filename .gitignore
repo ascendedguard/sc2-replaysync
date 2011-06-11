@@ -1,0 +1,6 @@
+_Resharper.*/*
+ReplaySync/bin
+ReplaySync/obj
+*.suo
+*.ReSharper.user
+*StyleCop.Cache
