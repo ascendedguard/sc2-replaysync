@@ -23,6 +23,15 @@ namespace ReplaySync
         {
             InitializeComponent();
             this.Closing += this.MainWindowClosing;
+            this.MouseDown += this.MainWindowMouseDown;
+        }
+
+        private void MainWindowMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == System.Windows.Input.MouseButton.Left && this.menuMovement.IsChecked)
+            {
+                this.DragMove();
+            }
         }
 
         /// <summary> Shuts down the application when the main window is closed. </summary>
@@ -33,6 +42,16 @@ namespace ReplaySync
             var viewModel = (MainWindowViewModel)DataContext;
             viewModel.Shutdown();
             Application.Current.Shutdown();
+        }
+
+        private void MoveWindowChecked(object sender, RoutedEventArgs e)
+        {
+            this.menuMovement.IsChecked = !this.menuMovement.IsChecked;
+        }
+
+        private void MinimizeClicked(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = System.Windows.WindowState.Minimized;
         }
     }
 }

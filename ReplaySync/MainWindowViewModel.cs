@@ -21,6 +21,7 @@ namespace ReplaySync
     using System.Windows.Threading;
 
     using ReplaySync.MVVM;
+    using ReplaySync.Properties;
 
     /// <summary> ViewModel for the MainWindow, handling all application logic. </summary>
     public class MainWindowViewModel : ObservableObject
@@ -48,6 +49,8 @@ namespace ReplaySync
 
         private Rect captureRect;
 
+        private ICommand exitCommand;
+
         /// <summary> Initializes a new instance of the <see cref="MainWindowViewModel"/> class. </summary>
         public MainWindowViewModel()
         {
@@ -72,6 +75,19 @@ namespace ReplaySync
             {
                 return this.listenCommand ?? (this.listenCommand = new RelayCommand(this.Listen));
             }
+        }
+
+        public ICommand ExitCommand
+        {
+            get
+            {
+                return this.exitCommand ?? (this.exitCommand = new RelayCommand(this.Exit));
+            }
+        }
+
+        private void Exit()
+        {
+            Application.Current.Shutdown();
         }
 
         /// <summary> Gets a command for connecting to an IP address and beginning the sync process. </summary>
@@ -202,20 +218,56 @@ namespace ReplaySync
         /// <summary> Connects to an IP address and syncs the time between computers. </summary>
         private void Sync()
         {
-            string str = this.IPAddressText;
+            var dialog = new InputAddressDialog();
+
+            if (dialog.ShowDialog() == false)
+            {
+                return;
+            }
+
+            string str = dialog.Address;
             var nums = str.Split('.');
 
             if (nums.Length != 4)
             {
+                MessageBox.Show(
+                    "An invalid IP address was entered. Only IPv4 is currently supported.",
+                    "Error: IP Address",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
                 return;
             }
 
             var ip = new byte[4];
 
-            for (int i = 0; i < 4; i++)
+            try
             {
-                ip[i] = byte.Parse(nums[i]);
+                for (int i = 0; i < 4; i++)
+                {
+                    ip[i] = byte.Parse(nums[i]);
+                }
             }
+            catch (FormatException)
+            {
+                MessageBox.Show(
+                    "An invalid IP address was entered. Fields can only contain numbers.",
+                    "Error: IP Address",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            catch (OverflowException)
+            {
+                MessageBox.Show(
+                    "An invalid IP address was entered. Values must be between 0 and 255.",
+                    "Error: IP Address",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);                
+            }
+
+            // It should be valid. Save this as the last used address.
+            Settings.Default.LastAddress = dialog.Address;
+            Settings.Default.Save();
 
             var endPoint = new IPEndPoint(new IPAddress(ip), 11000);
 

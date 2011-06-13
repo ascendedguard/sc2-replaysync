@@ -1,15 +1,29 @@
 ﻿<Window x:Class="ReplaySync.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-        xmlns:ReplaySync="clr-namespace:ReplaySync" Title="Replay Sync" Height="169" Width="308" Topmost="True">
+        xmlns:ReplaySync="clr-namespace:ReplaySync" 
+        Title="Replay Sync" Topmost="True" 
+        WindowStyle="None" 
+        ResizeMode="NoResize" 
+        ShowActivated="True" 
+        Height="59" Width="278" 
+        AllowsTransparency="True" Background="Transparent">
     <Window.DataContext>
         <ReplaySync:MainWindowViewModel />
     </Window.DataContext>
-    <Grid Background="Black">
-        <Image Source="{Binding CaptureImage}" HorizontalAlignment="Left" Margin="12,12,0,0" Name="image1" Stretch="Fill" VerticalAlignment="Top" Width="113" Height="24" />
-        <Button Content="Listen" Command="{Binding ListenCommand}" Height="23" HorizontalAlignment="Left" Margin="12,63,0,0" Name="button1" VerticalAlignment="Top" Width="101" />
-        <TextBox Height="23" Margin="74,92,0,0" Text="{Binding IPAddressText}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="121" />
-        <TextBlock Foreground="White" Height="23" HorizontalAlignment="Left" Margin="12,92,0,0" Text="IP Address" VerticalAlignment="Top" />
-        <Button Content="Sync" Command="{Binding SyncCommand}" Height="23" HorizontalAlignment="Left" Margin="200,92,0,0" Name="button2" VerticalAlignment="Top" Width="75" />
+    <Grid>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Command="{Binding ListenCommand}" Header="Broadcast" />
+                <MenuItem Command="{Binding SyncCommand}" Header="Sync" />
+                <Separator />
+                <MenuItem IsChecked="True" x:Name="menuMovement" Click="MoveWindowChecked" Header="Allow Movement" />
+                <Separator />
+                <MenuItem Click="MinimizeClicked" Header="Minimize" />
+                <MenuItem Command="{Binding ExitCommand}" Header="Exit" />
+            </ContextMenu>
+        </Grid.ContextMenu>
+        <Image Source="/Images/timerBackdrop.png" Stretch="Fill" />
+        <Image Source="{Binding CaptureImage}" Margin="20,12,101,12" Name="image1" Stretch="Fill" />
     </Grid>
 </Window>
