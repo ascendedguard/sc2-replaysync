@@ -10,6 +10,7 @@
 namespace ReplaySync
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Net;
     using System.Net.Sockets;
@@ -45,11 +46,23 @@ namespace ReplaySync
         /// <summary> Indicates all running threads should stop repeating. </summary>
         private bool stopListen;
 
+        private Rect captureRect;
+
         /// <summary> Initializes a new instance of the <see cref="MainWindowViewModel"/> class. </summary>
         public MainWindowViewModel()
         {
             this.timer.Interval = new TimeSpan(0, 0, 0, 0, 200);
             this.timer.Tick += this.TimerTick;
+
+            try
+            {
+                this.captureRect = GameTimerPosition.GetCaptureRect();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                MessageBox.Show("Your resolution is not currently supported.");
+
+            }
         }
 
         /// <summary> Gets the command initializing the "Listen" process. </summary>
@@ -249,8 +262,7 @@ namespace ReplaySync
         /// <param name="e"> The event arguments. </param>
         private void TimerTick(object sender, EventArgs e)
         {
-            var rect = new Rect(15, 775, 80, 21);
-            var img = CaptureScreenshot.Capture(rect);
+            var img = CaptureScreenshot.Capture(this.captureRect);
             this.CaptureImage = img;
         }
     }
